@@ -25,6 +25,10 @@ if not load_api_key_from_streamlit_secrets():
     st.error("GEMINI_API_KEY is not set. Add it to your local .env file or Streamlit Cloud secrets.")
     st.stop()
 
+def is_api_key_error(error):
+    message = str(error).lower()
+    return "api_key_invalid" in message or "api key not valid" in message or "api key" in message
+
 from src.ext import extract_text_from_pdf
 from src.pre import extract_contract_metadata
 from src.utils import classify_clauses, classify_clauses_ml, CUAD_CATEGORIES
@@ -346,7 +350,13 @@ if uploaded_file and analyze_button:
                                file_name=f"{uploaded_file.name}_analysis.json", mime="application/json")
 
     except Exception as e:
-        st.error(f"❌ Analysis Error: {str(e)}")
+        if is_api_key_error(e):
+            st.error(
+                "Analysis Error: Gemini API key is invalid. "
+                "Update GEMINI_API_KEY in Streamlit Cloud secrets, then reboot the app."
+            )
+        else:
+            st.error(f"Analysis Error: {str(e)}")
 
 elif uploaded_file and not analyze_button:
     col_left, col_right = st.columns([1.2, 1])
