@@ -13,6 +13,10 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
+api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+if api_key:
+    os.environ["GEMINI_API_KEY"] = api_key
+    os.environ["GOOGLE_API_KEY"] = api_key
 
 chroma_client = chromadb.PersistentClient(
     path="./chroma_db",
@@ -21,7 +25,7 @@ chroma_client = chromadb.PersistentClient(
 
 # 2. Use Google's embedding function (Keeps your stack FREE)
 embedding_fn = embedding_functions.GoogleGenerativeAiEmbeddingFunction(
-    api_key=os.getenv("GOOGLE_API_KEY")
+    api_key=api_key
 )
 
 collection = chroma_client.get_or_create_collection(

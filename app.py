@@ -2,10 +2,29 @@
 import streamlit as st
 from dotenv import load_dotenv
 load_dotenv()
+import os
 import pandas as pd
 import json
 import plotly.express as px
 import plotly.graph_objects as go
+
+def load_api_key_from_streamlit_secrets():
+    """Mirror Streamlit secrets into env vars before importing app modules."""
+    try:
+        api_key = st.secrets.get("GEMINI_API_KEY") or st.secrets.get("GOOGLE_API_KEY")
+    except Exception:
+        api_key = None
+
+    api_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    if api_key:
+        os.environ["GEMINI_API_KEY"] = api_key
+        os.environ["GOOGLE_API_KEY"] = api_key
+    return api_key
+
+if not load_api_key_from_streamlit_secrets():
+    st.error("GEMINI_API_KEY is not set. Add it to your local .env file or Streamlit Cloud secrets.")
+    st.stop()
+
 from src.ext import extract_text_from_pdf
 from src.pre import extract_contract_metadata
 from src.utils import classify_clauses, classify_clauses_ml, CUAD_CATEGORIES
