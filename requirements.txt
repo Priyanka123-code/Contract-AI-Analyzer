@@ -9,6 +9,7 @@ chromadb
 streamlit
 python-dotenv
 pandas
+plotly
 python-docx
 PyMuPDF
 tiktoken
