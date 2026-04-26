@@ -1,7 +1,6 @@
 venv/
-.env
-chroma_db/
 __pycache__/
-*.mp4
-*.pdf
-ds/
+*.pyc
+.env
+*.db
+.chroma/
